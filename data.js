@@ -4,7 +4,6 @@ const diagram = {
   footer: "© Innominds • Demo",
   showGrid: false,
 
-  // Canvas: positions are for a 1600×900 viewBox. Press "g" to toggle grid.
   groups: [
     { id:"client",  label:"Client",        x:40,  y:60,  w:360, h:280 },
     { id:"control", label:"Orchestration", x:440, y:60,  w:500, h:540 },
@@ -47,5 +46,3 @@ const diagram = {
     { from:"vdb",  to:"dl",    label:"ingest" }
   ]
 };
-
-
