@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Architecture</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Pan/zoom helper -->
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
+</head>
+<body>
+<header class="toolbar">
+  <div class="title">
+    <span id="diagram-title"></span>
+    <span id="diagram-subtitle" class="muted"></span>
+  </div>
+  <div class="actions">
+    <button id="toggle-theme">Theme</button>
+    <button id="reset-view">Reset View</button>
+    <button id="export-svg">Export SVG</button>
+    <button id="export-png">Export PNG</button>
+  </div>
+</header>
+
+<main>
+  <!-- SVG is injected here -->
+  <div id="stage" class="stage"></div>
+</main>
+
+<footer>
+  <small id="footer-note"></small>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
