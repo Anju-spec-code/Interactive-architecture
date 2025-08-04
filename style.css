@@ -1,0 +1,83 @@
+:root {
+  --bg: #ffffff;
+  --panel: #F8FAFC;
+  --stroke: #D1D5DB;
+  --text: #111827;
+  --muted: #6B7280;
+  --accent: #3B82F6;   /* primary blue */
+  --accent-2: #10B981; /* secondary green */
+  --chip: #EEF2FF;
+  --shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+
+[data-theme="dark"] {
+  --bg: #0B0F14;
+  --panel: #0F172A;
+  --stroke: #334155;
+  --text: #E5E7EB;
+  --muted: #94A3B8;
+  --chip: #1E293B;
+}
+
+* { box-sizing: border-box; }
+html, body { margin:0; height:100%; background:var(--bg); color:var(--text); font:14px/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial; }
+.toolbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px; border-bottom:1px solid var(--stroke); position:sticky; top:0; background:var(--bg); z-index:10;
+}
+.title { display:flex; gap:10px; align-items:baseline; }
+.title #diagram-title { font-weight:600; font-size:18px; }
+.muted { color:var(--muted); }
+.actions button {
+  border:1px solid var(--stroke); background:var(--panel); padding:6px 10px; border-radius:8px; cursor:pointer;
+}
+.actions button:hover { filter:brightness(0.98); }
+.stage { width:100%; height: calc(100vh - 80px); }
+footer { padding:8px 14px; color:var(--muted); border-top:1px solid var(--stroke); }
+
+svg { width:100%; height:100%; display:block; }
+
+.panel {
+  fill: var(--panel);
+  stroke: var(--stroke);
+  stroke-width: 1.2;
+  rx: 18; ry: 18;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.02));
+}
+
+.panel-title {
+  font-size: 12px; font-weight:600; fill: var(--muted);
+}
+
+.node {
+  fill:#fff; stroke:var(--stroke); stroke-width:1.2; rx:12; ry:12;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.06));
+}
+.node-title { font-size: 13px; font-weight:600; fill:var(--text); }
+.node-sub { font-size: 11px; fill: var(--muted); }
+
+.node.interactive { cursor: pointer; }
+.node:hover { stroke: var(--accent); }
+
+.edge {
+  fill: none; stroke: #64748B; stroke-width: 1.6;
+}
+.edge.animated {
+  stroke-dasharray: 6 5;
+  animation: dash 2.4s linear infinite;
+}
+@keyframes dash { to { stroke-dashoffset: -200; } }
+
+.edge-label {
+  font-size: 11px; fill: var(--text);
+  paint-order: stroke; stroke: var(--bg); stroke-width: 3px; /* halo for contrast */
+}
+
+.badge {
+  fill: var(--chip); stroke: var(--stroke); stroke-width:1; rx:10; ry:10;
+}
+.badge-text { font-size: 11px; fill: var(--muted); }
+
+.grid { stroke: var(--stroke); stroke-width:.4; opacity:.25; }
+
+.hidden { display: none; }
