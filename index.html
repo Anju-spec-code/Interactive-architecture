@@ -43,64 +43,98 @@ footer{padding:8px 14px;color:var(--muted);border-top:1px solid var(--stroke)}
 <footer><small id="ft"></small></footer>
 
 <script>
-/* ===== EDIT BELOW – DATA (positions are for a 1600×900 canvas) ===== */
+/* ===== EDIT BELOW – DATA ===== */
 const diagram = {
   title:"Context Engineering for AI Support",
   subtitle:"Real-time, governed, enterprise-scale",
   footer:"© Innominds • Demo",
   showGrid:false,
+
   groups:[
-    {id:"client",label:"Client",x:40,y:60,w:360,h:300},
-    {id:"control",label:"Orchestration",x:440,y:60,w:520,h:560},
-    {id:"data",label:"Data Plane",x:980,y:60,w:600,h:560},
-    {id:"observ",label:"Observability",x:40,y:380,w:360,h:240},
+    {id:"client", label:"Client",        x:40,  y:60,  w:360, h:300},
+    {id:"control",label:"Orchestration", x:440, y:60,  w:520, h:580},
+    {id:"data",   label:"Data Plane",    x:980, y:60,  w:600, h:580},
+    {id:"observ", label:"Observability", x:40,  y:380, w:360, h:360},
   ],
+
   nodes:[
-    {id:"app",label:"User / Channels",sub:"Web, Mobile, WhatsApp",x:70,y:110,w:300,h:70,group:"client"},
-    {id:"hitl",label:"Human Agent Desk",sub:"Context handoff",x:70,y:210,w:300,h:70,group:"client"},
-    {id:"api",label:"API Gateway",sub:"Auth, Rate-limit",x:470,y:110,w:240,h:70,group:"control"},
-    {id:"orch",label:"Agent Orchestrator",sub:"Routing, Tools, Memory",x:740,y:110,w:200,h:70,group:"control"},
-    {id:"guard",label:"Input Guardrails",sub:"PII, Safety, Policies",x:470,y:210,w:240,h:70,group:"control"},
-    {id:"retr",label:"Retriever",sub:"Top-k, Filters",x:740,y:210,w:200,h:70,group:"control"},
-    {id:"llm",label:"LLM Service",sub:"Generation, Tools",x:560,y:300,w:320,h:70,group:"control"},
-    {id:"og",label:"Output Guardrails",sub:"Toxicity, PII, Policy",x:560,y:390,w:320,h:70,group:"control"},
-    {id:"mem",label:"Session Memory",sub:"User & thread state",x:470,y:490,w:240,h:70,group:"control"},
-    {id:"vdb",label:"Vector DB",sub:"Embeddings, HNSW",x:1010,y:110,w:260,h:80,group:"data"},
-    {id:"kb",label:"Knowledge Store",sub:"Docs, Policies",x:1290,y:110,w:260,h:80,group:"data"},
-    {id:"dl",label:"Data Lake",sub:"Logs, Images, JSON",x:1010,y:220,w:260,h:80,group:"data"},
-    {id:"rank",label:"Re-ranker",sub:"Cross-encoder",x:1290,y:220,w:260,h:80,group:"data"},
-    {id:"embed",label:"Embedding Service",sub:"Batch/Stream",x:1010,y:330,w:260,h:80,group:"data"},
-    {id:"ingest",label:"Ingestion & Connectors",sub:"ETL, Webhooks, SaaS",x:1290,y:330,w:260,h:80,group:"data"},
-    {id:"mon",label:"Telemetry",sub:"Traces, Metrics",x:70,y:430,w:300,h:70,group:"observ"},
-    {id:"audit",label:"Audit & Governance",sub:"Prompts, Outputs",x:70,y:520,w:300,h:70,group:"observ"},
+    {id:"app",   label:"User / Channels",    sub:"Web, Mobile, WhatsApp", x:70,  y:110, w:300, h:70, group:"client"},
+    {id:"hitl",  label:"Human Agent Desk",   sub:"Context handoff",       x:70,  y:210, w:300, h:70, group:"client"},
+
+    {id:"api",   label:"API Gateway",        sub:"Auth, Rate-limit",      x:470, y:110, w:240, h:70, group:"control"},
+    {id:"orch",  label:"Agent Orchestrator", sub:"Routing, Tools, Memory",x:740, y:110, w:200, h:70, group:"control"},
+    {id:"policy",label:"Policy Store",       sub:"Rules, versions",       x:470, y:160, w:240, h:70, group:"control"},
+    {id:"guard", label:"Input Guardrails",   sub:"PII, Safety, Policies", x:470, y:210, w:240, h:70, group:"control"},
+    {id:"retr",  label:"Retriever",          sub:"Top-k, Filters",        x:740, y:210, w:200, h:70, group:"control"},
+    {id:"llm",   label:"LLM Service",        sub:"Generation, Tools",     x:560, y:300, w:320, h:70, group:"control"},
+    {id:"og",    label:"Output Guardrails",  sub:"Toxicity, PII, Policy", x:560, y:390, w:320, h:70, group:"control"},
+    {id:"mem",   label:"Session Memory",     sub:"User & thread state",   x:470, y:490, w:240, h:70, group:"control"},
+    {id:"cache", label:"Context/Response Cache (KV)", sub:"Prompt & ctx hits", x:740, y:490, w:200, h:70, group:"control"},
+
+    {id:"vdb",   label:"Vector DB",          sub:"Embeddings, HNSW",      x:1010, y:110, w:260, h:80, group:"data"},
+    {id:"kb",    label:"Knowledge Store",    sub:"Docs, Policies",        x:1290, y:110, w:260, h:80, group:"data"},
+    {id:"dl",    label:"Data Lake",          sub:"Logs, Images, JSON",    x:1010, y:220, w:260, h:80, group:"data"},
+    {id:"rank",  label:"Re-ranker",          sub:"Cross-encoder",         x:1290, y:220, w:260, h:80, group:"data"},
+    {id:"embed", label:"Embedding Service",  sub:"Batch/Stream",          x:1010, y:330, w:260, h:80, group:"data"},
+    {id:"ingest",label:"Ingestion & Connectors", sub:"ETL, Webhooks, SaaS", x:1290, y:330, w:260, h:80, group:"data"},
+    {id:"rbac",  label:"Tenant/RBAC Filter", sub:"ACL, tags, recency",    x:1010, y:420, w:260, h:80, group:"data"},
+    {id:"indexer",label:"Index Manager",     sub:"Reindex, TTL, shards",  x:1290, y:420, w:260, h:80, group:"data"},
+    {id:"catalog",label:"Metadata Catalog",  sub:"IDs, versions, lineage",x:1010, y:510, w:260, h:80, group:"data"},
+
+    {id:"mon",   label:"Telemetry",          sub:"Traces, Metrics",       x:70,  y:430, w:300, h:70, group:"observ"},
+    {id:"audit", label:"Audit & Governance", sub:"Prompts, Outputs",      x:70,  y:520, w:300, h:70, group:"observ"},
+    {id:"eval",  label:"Eval & Test Harness",sub:"Golden sets, regression",x:70, y:610, w:300, h:70, group:"observ"},
   ],
+
   edges:[
-    {from:"app",to:"api",label:"request",animated:true,route:"hv",vx:450,dx:-8,dy:-10},
-    {from:"api",to:"mon",label:"trace",route:"vh",vy:365,dx:-8,dy:-10},
-    {from:"api",to:"hitl",label:"escalate",route:"vh",vy:205,dx:-10,dy:12},
-    {from:"api",to:"guard",label:"sanitize",animated:true,route:"vh",vy:170,dx:-12,dy:-12},
-    {from:"guard",to:"orch",label:"route",route:"hv",vx:730,dx:-6,dy:-12},
-    {from:"orch",to:"retr",label:"retrieve",route:"vh",vy:210,dy:-12},
-    {from:"retr",to:"vdb",label:"search",animated:true,route:"hv",vx:980,dx:-18,dy:-12},
-    {from:"vdb",to:"retr",label:"hits",route:"hv",vx:980,dx:-18,dy:14},
-    {from:"retr",to:"kb",label:"lookup",route:"hv",vx:980,dx:-10,dy:-12},
-    {from:"retr",to:"rank",label:"re-rank",route:"hv",vx:980,dx:-10,dy:12},
-    {from:"rank",to:"orch",label:"ranked ctx",route:"hv",vx:980,dx:14,dy:-12},
-    {from:"orch",to:"llm",label:"tools+prompt",route:"vh",vy:300,dx:-12,dy:-12},
-    {from:"llm",to:"og",label:"filter",animated:true,route:"vh",vy:385,dx:-10,dy:-12},
-    {from:"og",to:"api",label:"respond",animated:true,route:"vh",vy:170,dx:16,dy:-16},
-    {from:"orch",to:"mem",label:"update",route:"vh",vy:520,dx:-10,dy:-12},
-    {from:"mem",to:"orch",label:"recall",route:"vh",vy:520,dx:16,dy:14},
-    {from:"orch",to:"hitl",label:"handoff packet",route:"vh",vy:240,dx:8,dy:-12},
-    {from:"ingest",to:"dl",label:"land",route:"vh",vy:260,dx:-10,dy:-12},
-    {from:"ingest",to:"kb",label:"docs",route:"vh",vy:150,dx:-10,dy:-12},
-    {from:"ingest",to:"embed",label:"chunk+embed",route:"vh",vy:360,dx:-6,dy:-12},
-    {from:"embed",to:"vdb",label:"index",route:"vh",vy:150,dx:-10,dy:-12},
-    {from:"orch",to:"audit",label:"log",route:"vh",vy:560,dx:-10,dy:-12},
-    {from:"llm",to:"audit",label:"store",route:"vh",vy:560,dx:12,dy:14},
-    {from:"retr",to:"audit",label:"store",route:"vh",vy:560,dx:-12,dy:-14},
-    {from:"audit",to:"dl",label:"feedback",route:"hv",vx:980,dx:-12,dy:-12},
-    {from:"vdb",to:"dl",label:"ingest",route:"vh",vy:260,dx:-10,dy:14},
+    {from:"app",  to:"api",   label:"request",  animated:true, route:"hv", vx:450, dx:-8, dy:-10},
+    {from:"api",  to:"mon",   label:"trace",    route:"vh", vy:365, dx:-8, dy:-10},
+    {from:"api",  to:"hitl",  label:"escalate", route:"vh", vy:205, dx:-10, dy:12},
+
+    {from:"policy", to:"guard", label:"policies", route:"vh", vy:210, dx:-8, dy:-12},
+    {from:"policy", to:"og",    label:"policies", route:"vh", vy:390, dx:-8, dy:-12},
+
+    {from:"api",   to:"guard", label:"sanitize", animated:true, route:"vh", vy:170, dx:-12, dy:-12},
+    {from:"guard", to:"orch",  label:"route",    route:"hv", vx:730, dx:-6, dy:-12},
+
+    {from:"orch",  to:"cache", label:"read",     route:"vh", vy:520, dx:-10, dy:-12},
+    {from:"og",    to:"cache", label:"write",    route:"vh", vy:520, dx:-8,  dy:14},
+
+    {from:"orch",  to:"retr",  label:"retrieve", route:"vh", vy:210, dy:-12},
+    {from:"retr",  to:"rbac",  label:"pre-filter", route:"hv", vx:980, dx:-12, dy:-12},
+    {from:"rbac",  to:"vdb",   label:"search",   animated:true, route:"vh", vy:150, dx:-10, dy:-12},
+    {from:"vdb",   to:"retr",  label:"hits",     route:"hv", vx:980, dx:-18, dy:14},
+    {from:"retr",  to:"kb",    label:"lookup",   route:"hv", vx:980, dx:-10, dy:-12},
+    {from:"retr",  to:"rank",  label:"re-rank",  route:"hv", vx:980, dx:-10, dy:12},
+    {from:"rank",  to:"orch",  label:"ranked ctx", route:"hv", vx:980, dx:14, dy:-12},
+
+    {from:"orch",  to:"llm",   label:"tools+prompt", route:"vh", vy:300, dx:-12, dy:-12},
+    {from:"llm",   to:"og",    label:"filter",   animated:true, route:"vh", vy:385, dx:-10, dy:-12},
+    {from:"og",    to:"api",   label:"respond",  animated:true, route:"vh", vy:170, dx:16, dy:-16},
+
+    {from:"orch",  to:"mem",   label:"update",   route:"vh", vy:520, dx:-10, dy:-12},
+    {from:"mem",   to:"orch",  label:"recall",   route:"vh", vy:520, dx:16,  dy:14},
+    {from:"orch",  to:"hitl",  label:"handoff packet", route:"vh", vy:240, dx:8, dy:-12},
+    {from:"hitl",  to:"ingest",label:"corrections", route:"hv", vx:980, dx:-10, dy:-12},
+    {from:"hitl",  to:"audit", label:"decisions",   route:"vh", vy:560, dx:-10, dy:-12},
+
+    {from:"ingest", to:"dl",     label:"land",       route:"vh", vy:260, dx:-10, dy:-12},
+    {from:"ingest", to:"kb",     label:"docs",       route:"vh", vy:150, dx:-10, dy:-12},
+    {from:"ingest", to:"embed",  label:"chunk+embed",route:"vh", vy:360, dx:-6,  dy:-12},
+    {from:"embed",  to:"vdb",    label:"index",      route:"vh", vy:150, dx:-10, dy:-12},
+    {from:"indexer",to:"vdb",    label:"manage TTL/shards", route:"vh", vy:190, dx:-6, dy:-12},
+    {from:"ingest", to:"catalog",label:"register",   route:"vh", vy:550, dx:-10, dy:-12},
+    {from:"catalog",to:"rbac",   label:"ACLs",       route:"vh", vy:460, dx:-10, dy:-12},
+
+    {from:"api",   to:"mon",   label:"trace",    route:"vh", vy:365, dx:-8, dy:-10},
+    {from:"orch",  to:"audit", label:"log",      route:"vh", vy:560, dx:-10, dy:-12},
+    {from:"llm",   to:"audit", label:"store",    route:"vh", vy:560, dx:12,  dy:14},
+    {from:"retr",  to:"audit", label:"store",    route:"vh", vy:560, dx:-12, dy:-14},
+    {from:"audit", to:"eval",  label:"samples",  route:"vh", vy:640, dx:-10, dy:-12},
+    {from:"eval",  to:"policy",label:"tune",     route:"vh", vy:180, dx:-10, dy:-12},
+    {from:"eval",  to:"orch",  label:"prompt tests", route:"vh", vy:120, dx:-10, dy:-12},
+    {from:"audit", to:"dl",    label:"feedback", route:"hv", vx:980, dx:-12, dy:-12},
+    {from:"vdb",   to:"dl",    label:"ingest",   route:"vh", vy:260, dx:-10, dy:14},
   ]
 };
 /* ===== END DATA ===== */
@@ -116,16 +150,13 @@ const diagram = {
   const s=document.getElementById("stage");
   const svg=E("svg",{viewBox:`0 0 ${W} ${H}`}); s.appendChild(svg);
 
-  // grid
   const grid=E("g",{id:"grid",class:diagram.showGrid?"":"hidden"});
   for(let x=0;x<=W;x+=40) grid.appendChild(E("line",{x1:x,y1:0,x2:x,y2:H,class:"grid"}));
   for(let y=0;y<=H;y+=40) grid.appendChild(E("line",{x1:0,y1:y,x2:W,y2:y,class:"grid"}));
   svg.appendChild(grid);
 
-  // defs
   const defs=E("defs",{}); defs.appendChild(marker("arrow","#64748B")); svg.appendChild(defs);
 
-  // panels
   const gPanels=E("g"); svg.appendChild(gPanels);
   diagram.groups.forEach(g=>{
     gPanels.appendChild(E("rect",{x:g.x,y:g.y,width:g.w,height:g.h,class:"panel"}));
@@ -134,12 +165,10 @@ const diagram = {
     const t=E("text",{x:g.x+24,y:g.y+27,class:"badge-text"}); t.textContent=g.label; gPanels.appendChild(t);
   });
 
-  // layers
   const gEdges=E("g"); svg.appendChild(gEdges);
   const gNodes=E("g"); svg.appendChild(gNodes);
-  const gLabels=E("g"); svg.appendChild(gLabels); // labels on top
+  const gLabels=E("g"); svg.appendChild(gLabels);
 
-  // nodes
   diagram.nodes.forEach(n=>{
     const g=E("g",{"data-id":n.id});
     g.appendChild(E("rect",{x:n.x,y:n.y,width:n.w,height:n.h,class:"node"}));
@@ -148,26 +177,22 @@ const diagram = {
     gNodes.appendChild(g);
   });
 
-  // edges + labels
   diagram.edges.forEach(e=>{
     const sC=center(e.from), tC=center(e.to);
     const d=route(sC,tC,e);
     const p=E("path",{d,class:"edge"+(e.animated?" animated":""),"marker-end":"url(#arrow)"}); gEdges.appendChild(p);
     if(e.label){
       const mid=pointAt(p,0.5);
-      const tx=(e.dx||0), ty=(e.dy!=null?e.dy:-6);
+      const tx=e.dx||0, ty=(e.dy!=null?e.dy:-6);
       const lab=E("text",{x:mid.x+tx,y:mid.y+ty,class:"edge-label","text-anchor":"middle"}); lab.textContent=e.label; gLabels.appendChild(lab);
     }
   });
 
-  // pan/zoom
   const pz=svgPanZoom(svg,{controlIconsEnabled:true,fit:true,center:true,minZoom:.5,maxZoom:6});
   document.getElementById("reset").onclick=()=>{pz.resetZoom();pz.center();pz.fit();};
-
   document.getElementById("export-svg").onclick=()=>downloadSVG(svg);
   document.getElementById("export-png").onclick=()=>downloadPNG(svg);
 
-  /* helpers */
   function E(tag,attrs){const x=document.createElementNS(SVG,tag);for(const k in attrs)x.setAttribute(k,attrs[k]);return x;}
   function marker(id,color){const m=E("marker",{id,viewBox:"0 0 10 10",refX:"9.5",refY:"5",markerWidth:"8",markerHeight:"8",orient:"auto-start-reverse"}); m.appendChild(E("path",{d:"M0 0 L10 5 L0 10 Z",fill:color})); return m;}
   function center(id){const n=diagram.nodes.find(n=>n.id===id); return {x:n.x+n.w/2,y:n.y+n.h/2};}
