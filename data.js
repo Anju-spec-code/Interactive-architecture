@@ -4,7 +4,6 @@ const diagram = {
   footer: "© Innominds • Demo",
   showGrid: false,
 
-  // Panels (wider to reduce crowding)
   groups: [
     { id:"client",  label:"Client",        x:40,  y:60,  w:360, h:300 },
     { id:"control", label:"Orchestration", x:440, y:60,  w:520, h:560 },
@@ -12,7 +11,6 @@ const diagram = {
     { id:"observ",  label:"Observability", x:40,  y:380, w:360, h:240 }
   ],
 
-  // Nodes (aligned rows; extra vertical gaps)
   nodes: [
     // Client
     { id:"app",   label:"User / Channels",    sub:"Web, Mobile, WhatsApp", x:70,  y:110, w:300, h:70, group:"client" },
@@ -40,46 +38,45 @@ const diagram = {
     { id:"audit", label:"Audit & Governance", sub:"Prompts, Outputs",      x:70,  y:520, w:300, h:70, group:"observ" }
   ],
 
-  // Edges (kept; coords above avoid overlaps)
   edges: [
     // Client → Gateway + Telemetry/Desk
-    { from:"app",  to:"api",   label:"request",   animated:true },
-    { from:"api",  to:"mon",   label:"trace" },
-    { from:"api",  to:"hitl",  label:"escalate" },
+    { from:"app",  to:"api",   label:"request",   animated:true, route:"hv", vx:450, label_dx:-8 },
+    { from:"api",  to:"mon",   label:"trace",     route:"vh", vy:365, label_dx:-8 },
+    { from:"api",  to:"hitl",  label:"escalate",  route:"vh", vy:205, label_dx:-8 },
 
     // Input safety → Orchestration
-    { from:"api",   to:"guard", label:"sanitize",  animated:true },
-    { from:"guard", to:"orch",  label:"route" },
+    { from:"api",   to:"guard", label:"sanitize",  animated:true, route:"vh", vy:170 },
+    { from:"guard", to:"orch",  label:"route",     route:"hv", vx:730, label_dx:-6 },
 
-    // Retrieval (RAG)
-    { from:"orch",  to:"retr",  label:"retrieve" },
-    { from:"retr",  to:"vdb",   label:"search",    animated:true },
-    { from:"vdb",   to:"retr",  label:"hits" },
-    { from:"retr",  to:"kb",    label:"lookup" },
-    { from:"retr",  to:"rank",  label:"re-rank" },
-    { from:"rank",  to:"orch",  label:"ranked ctx" },
+    // Retrieval (RAG) — route edges through clean vertical spines
+    { from:"orch",  to:"retr",  label:"retrieve",  route:"vh", vy:210 },
+    { from:"retr",  to:"vdb",   label:"search",    animated:true, route:"hv", vx:980, label_dx:-6 },
+    { from:"vdb",   to:"retr",  label:"hits",      route:"hv", vx:980, label_dx:-6, label_dy:12 },
+    { from:"retr",  to:"kb",    label:"lookup",    route:"hv", vx:980 },
+    { from:"retr",  to:"rank",  label:"re-rank",   route:"hv", vx:980 },
+    { from:"rank",  to:"orch",  label:"ranked ctx",route:"hv", vx:980, label_dx:10 },
 
     // Generation + output guardrails
-    { from:"orch",  to:"llm",   label:"tools+prompt" },
-    { from:"llm",   to:"og",    label:"filter",     animated:true },
-    { from:"og",    to:"api",   label:"respond",    animated:true },
+    { from:"orch",  to:"llm",   label:"tools+prompt", route:"vh", vy:300 },
+    { from:"llm",   to:"og",    label:"filter",     animated:true, route:"vh", vy:385, label_dx:-10 },
+    { from:"og",    to:"api",   label:"respond",    animated:true, route:"vh", vy:170, label_dx:12, label_dy:-14 },
 
     // Memory + HITL
-    { from:"orch",  to:"mem",   label:"update" },
-    { from:"mem",   to:"orch",  label:"recall" },
-    { from:"orch",  to:"hitl",  label:"handoff packet" },
+    { from:"orch",  to:"mem",   label:"update",     route:"vh", vy:520 },
+    { from:"mem",   to:"orch",  label:"recall",     route:"vh", vy:520, label_dx:16, label_dy:14 },
+    { from:"orch",  to:"hitl",  label:"handoff packet", route:"vh", vy:240, label_dx:8 },
 
     // Ingestion & indexing
-    { from:"ingest", to:"dl",    label:"land" },
-    { from:"ingest", to:"kb",    label:"docs" },
-    { from:"ingest", to:"embed", label:"chunk+embed" },
-    { from:"embed",  to:"vdb",   label:"index" },
+    { from:"ingest", to:"dl",    label:"land",         route:"vh", vy:260 },
+    { from:"ingest", to:"kb",    label:"docs",         route:"vh", vy:150 },
+    { from:"ingest", to:"embed", label:"chunk+embed",  route:"vh", vy:360 },
+    { from:"embed",  to:"vdb",   label:"index",        route:"vh", vy:150 },
 
     // Governance storage & feedback
-    { from:"orch",  to:"audit", label:"log" },
-    { from:"llm",   to:"audit", label:"store" },
-    { from:"retr",  to:"audit", label:"store" },
-    { from:"audit", to:"dl",    label:"feedback" },
-    { from:"vdb",   to:"dl",    label:"ingest" }
+    { from:"orch",  to:"audit", label:"log",     route:"vh", vy:560 },
+    { from:"llm",   to:"audit", label:"store",   route:"vh", vy:560, label_dx:10 },
+    { from:"retr",  to:"audit", label:"store",   route:"vh", vy:560, label_dx:-10 },
+    { from:"audit", to:"dl",    label:"feedback",route:"hv", vx:980 },
+    { from:"vdb",   to:"dl",    label:"ingest",  route:"vh", vy:260 }
   ]
 };
