@@ -3,246 +3,127 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Interactive Architecture</title>
+<title>Context Engineering for AI Support</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <style>
-:root{--bg:#fff;--panel:#F8FAFC;--stroke:#CBD5E1;--text:#0F172A;--muted:#475569}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.4 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
-.toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--stroke);background:var(--bg)}
-.title{display:flex;gap:10px;align-items:baseline}
-.title b{font-size:18px}
-.muted{color:#64748B}
-.actions button{border:1px solid var(--stroke);background:var(--panel);padding:6px 10px;border-radius:8px;cursor:pointer}
-.stage{width:100%;height:calc(100vh - 64px)}
-svg{width:100%;height:100%;display:block;shape-rendering:geometricPrecision}
-.panel{fill:var(--panel);stroke:var(--stroke);stroke-width:1.2;rx:18;ry:18;filter:drop-shadow(0 1px 1px rgba(0,0,0,.02))}
-.badge{fill:#EEF2FF;stroke:var(--stroke);stroke-width:1;rx:10;ry:10}
-.badge-text{font-size:11px;fill:#64748B}
-.node{fill:#fff;stroke:var(--stroke);stroke-width:1.4;rx:12;ry:12;filter:drop-shadow(0 2px 6px rgba(0,0,0,.06))}
-.node-title{font-size:13px;font-weight:600;fill:var(--text)}
-.node-sub{font-size:11px;fill:#64748B}
-.edge{fill:none;stroke:#334155;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.edge.animated{stroke-dasharray:8 6;animation:dash 2.4s linear infinite}
-@keyframes dash{to{stroke-dashoffset:-240}}
-.edge-label{font-size:12px;font-weight:500;fill:#0F172A;paint-order:stroke;stroke:#FFFFFF;stroke-width:4px}
-.grid{stroke:#E2E8F0;stroke-width:.4;opacity:.25}
-.hidden{display:none}
-footer{padding:8px 14px;color:#64748B;border-top:1px solid var(--stroke)}
+  :root{--bg:#fff;--text:#0f172a;--muted:#475569}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.4 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
+  header{position:sticky;top:0;z-index:10;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #e2e8f0;background:#fff}
+  .muted{color:var(--muted)}
+  .wrap{padding:16px}
+  button{border:1px solid #e2e8f0;background:#f8fafc;padding:6px 10px;border-radius:8px;cursor:pointer}
+  .mermaid svg{width:100% !important; height:auto !important;}
 </style>
-<script src="https://unpkg.com/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "base", themeVariables: {
+    primaryColor: "#ffffff", primaryBorderColor:"#cbd5e1", primaryTextColor:"#0f172a",
+    lineColor:"#334155", fontSize:"14px", fontFamily:"ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial"
+  }});
+  function exportSVG() {
+    const svg = document.querySelector(".mermaid svg");
+    const blob = new Blob([new XMLSerializer().serializeToString(svg)], {type:"image/svg+xml"});
+    const url = URL.createObjectURL(blob); const a = Object.assign(document.createElement("a"), {href:url, download:"diagram.svg"}); a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+</script>
 </head>
 <body>
-<header class="toolbar">
-  <div class="title"><b id="t"></b><span id="st" class="muted"></span></div>
-  <div class="actions">
-    <button id="reset">Reset View</button>
-    <button id="export-svg">Export SVG</button>
-    <button id="export-png">Export PNG</button>
+<header>
+  <div><b>Context Engineering for AI Support</b> <span class="muted">Real-time, governed, enterprise-scale</span></div>
+  <div>
+    <button onclick="exportSVG()">Export SVG</button>
   </div>
 </header>
-<div id="stage" class="stage"></div>
-<footer><small id="ft"></small></footer>
 
-<script>
-/* ===== EDIT BELOW – DATA (same structure as before) ===== */
-const diagram = {
-  title:"Context Engineering for AI Support",
-  subtitle:"Real-time, governed, enterprise-scale",
-  footer:"© Innominds • Demo",
-  showGrid:false,
+<div class="wrap">
+<div class="mermaid">
+flowchart LR
+  %% ====== PANELS ======
+  subgraph CLIENT[Client]
+    APP["User / Channels<br/><span class='muted'>Web, Mobile, WhatsApp</span>"]
+    HITL["Human Agent Desk<br/><span class='muted'>Context handoff</span>"]
+  end
 
-  groups:[
-    {id:"client", label:"Client",        x:40,  y:60,  w:360, h:300},
-    {id:"control",label:"Orchestration", x:440, y:60,  w:520, h:580},
-    {id:"data",   label:"Data Plane",    x:980, y:60,  w:600, h:580},
-    {id:"observ", label:"Observability", x:40,  y:380, w:360, h:360},
-  ],
+  subgraph ORCH[Orchestration]
+    API["API Gateway<br/><span class='muted'>Auth, Rate-limit</span>"]
+    POLICY["Policy Store<br/><span class='muted'>Rules, versions</span>"]
+    GUARD["Input Guardrails<br/><span class='muted'>PII, Safety, Policies</span>"]
+    ORCH["Agent Orchestrator<br/><span class='muted'>Routing, Tools, Memory</span>"]
+    RETR["Retriever<br/><span class='muted'>Top-k, Filters</span>"]
+    LLM["LLM Service<br/><span class='muted'>Generation, Tools</span>"]
+    OG["Output Guardrails<br/><span class='muted'>Toxicity, PII, Policy</span>"]
+    MEM["Session Memory<br/><span class='muted'>User & thread state</span>"]
+    CACHE["Context/Response Cache (KV)<br/><span class='muted'>Prompt & ctx hits</span>"]
+  end
 
-  nodes:[
-    {id:"app",   label:"User / Channels",    sub:"Web, Mobile, WhatsApp", x:70,  y:110, w:300, h:70, group:"client"},
-    {id:"hitl",  label:"Human Agent Desk",   sub:"Context handoff",       x:70,  y:210, w:300, h:70, group:"client"},
+  subgraph DATA[Data Plane]
+    VDB["Vector DB<br/><span class='muted'>Embeddings, HNSW</span>"]
+    KB["Knowledge Store<br/><span class='muted'>Docs, Policies</span>"]
+    DL["Data Lake<br/><span class='muted'>Logs, Images, JSON</span>"]
+    RANK["Re-ranker<br/><span class='muted'>Cross-encoder</span>"]
+    EMB["Embedding Service<br/><span class='muted'>Batch/Stream</span>"]
+    ING["Ingestion & Connectors<br/><span class='muted'>ETL, Webhooks, SaaS</span>"]
+    RBAC["Tenant/RBAC Filter<br/><span class='muted'>ACL, tags, recency</span>"]
+    INDEXER["Index Manager<br/><span class='muted'>Reindex, TTL, shards</span>"]
+    CATALOG["Metadata Catalog<br/><span class='muted'>IDs, versions, lineage</span>"]
+  end
 
-    {id:"api",   label:"API Gateway",        sub:"Auth, Rate-limit",      x:470, y:110, w:240, h:70, group:"control"},
-    {id:"orch",  label:"Agent Orchestrator", sub:"Routing, Tools, Memory",x:740, y:110, w:200, h:70, group:"control"},
-    {id:"policy",label:"Policy Store",       sub:"Rules, versions",       x:470, y:160, w:240, h:70, group:"control"},
-    {id:"guard", label:"Input Guardrails",   sub:"PII, Safety, Policies", x:470, y:210, w:240, h:70, group:"control"},
-    {id:"retr",  label:"Retriever",          sub:"Top-k, Filters",        x:740, y:210, w:200, h:70, group:"control"},
-    {id:"llm",   label:"LLM Service",        sub:"Generation, Tools",     x:560, y:300, w:320, h:70, group:"control"},
-    {id:"og",    label:"Output Guardrails",  sub:"Toxicity, PII, Policy", x:560, y:390, w:320, h:70, group:"control"},
-    {id:"mem",   label:"Session Memory",     sub:"User & thread state",   x:470, y:490, w:240, h:70, group:"control"},
-    {id:"cache", label:"Context/Response Cache (KV)", sub:"Prompt & ctx hits", x:740, y:490, w:200, h:70, group:"control"},
+  subgraph OBS[Observability]
+    MON["Telemetry<br/><span class='muted'>Traces, Metrics</span>"]
+    AUD["Audit & Governance<br/><span class='muted'>Prompts, Outputs</span>"]
+    EVAL["Eval & Test Harness<br/><span class='muted'>Golden sets, regression</span>"]
+  end
 
-    {id:"vdb",   label:"Vector DB",          sub:"Embeddings, HNSW",      x:1010, y:110, w:260, h:80, group:"data"},
-    {id:"kb",    label:"Knowledge Store",    sub:"Docs, Policies",        x:1290, y:110, w:260, h:80, group:"data"},
-    {id:"dl",    label:"Data Lake",          sub:"Logs, Images, JSON",    x:1010, y:220, w:260, h:80, group:"data"},
-    {id:"rank",  label:"Re-ranker",          sub:"Cross-encoder",         x:1290, y:220, w:260, h:80, group:"data"},
-    {id:"embed", label:"Embedding Service",  sub:"Batch/Stream",          x:1010, y:330, w:260, h:80, group:"data"},
-    {id:"ingest",label:"Ingestion & Connectors", sub:"ETL, Webhooks, SaaS", x:1290, y:330, w:260, h:80, group:"data"},
-    {id:"rbac",  label:"Tenant/RBAC Filter", sub:"ACL, tags, recency",    x:1010, y:420, w:260, h:80, group:"data"},
-    {id:"indexer",label:"Index Manager",     sub:"Reindex, TTL, shards",  x:1290, y:420, w:260, h:80, group:"data"},
-    {id:"catalog",label:"Metadata Catalog",  sub:"IDs, versions, lineage",x:1010, y:510, w:260, h:80, group:"data"},
+  %% ====== FLOWS ======
+  APP -- request --> API
+  API -- trace --> MON
+  API -- escalate --> HITL
 
-    {id:"mon",   label:"Telemetry",          sub:"Traces, Metrics",       x:70,  y:430, w:300, h:70, group:"observ"},
-    {id:"audit", label:"Audit & Governance", sub:"Prompts, Outputs",      x:70,  y:520, w:300, h:70, group:"observ"},
-    {id:"eval",  label:"Eval & Test Harness",sub:"Golden sets, regression",x:70, y:610, w:300, h:70, group:"observ"},
-  ],
+  POLICY -- policies --> GUARD
+  POLICY -- policies --> OG
 
-  edges:[
-    {from:"app",  to:"api",   label:"request",  animated:true, route:"hv", vx:450, dx:-8, dy:-10},
-    {from:"api",  to:"mon",   label:"trace",    route:"vh", vy:365, dx:-8, dy:-10},
-    {from:"api",  to:"hitl",  label:"escalate", route:"vh", vy:205, dx:-10, dy:12},
+  API -- sanitize --> GUARD
+  GUARD -- route --> ORCH
 
-    {from:"policy", to:"guard", label:"policies", route:"vh", vy:210, dx:-8, dy:-12},
-    {from:"policy", to:"og",    label:"policies", route:"vh", vy:390, dx:-8, dy:-12},
+  ORCH -- read --> CACHE
+  OG -- write --> CACHE
 
-    {from:"api",   to:"guard", label:"sanitize", animated:true, route:"vh", vy:170, dx:-12, dy:-12},
-    {from:"guard", to:"orch",  label:"route",    route:"hv", vx:730, dx:-6, dy:-12},
+  ORCH -- retrieve --> RETR
+  RETR -- pre-filter --> RBAC
+  RBAC -- search --> VDB
+  VDB -- hits --> RETR
+  RETR -- lookup --> KB
+  RETR -- re-rank --> RANK
+  RANK -- ranked ctx --> ORCH
 
-    {from:"orch",  to:"cache", label:"read",     route:"vh", vy:520, dx:-10, dy:-12},
-    {from:"og",    to:"cache", label:"write",    route:"vh", vy:520, dx:-8,  dy:14},
+  ORCH -- tools+prompt --> LLM
+  LLM -- filter --> OG
+  OG -- respond --> API
 
-    {from:"orch",  to:"retr",  label:"retrieve", route:"vh", vy:210, dy:-12},
-    {from:"retr",  to:"rbac",  label:"pre-filter", route:"hv", vx:980, dx:-12, dy:-12},
-    {from:"rbac",  to:"vdb",   label:"search",   animated:true, route:"vh", vy:150, dx:-10, dy:-12},
-    {from:"vdb",   to:"retr",  label:"hits",     route:"hv", vx:980, dx:-18, dy:14},
-    {from:"retr",  to:"kb",    label:"lookup",   route:"hv", vx:980, dx:-10, dy:-12},
-    {from:"retr",  to:"rank",  label:"re-rank",  route:"hv", vx:980, dx:-10, dy:12},
-    {from:"rank",  to:"orch",  label:"ranked ctx", route:"hv", vx:980, dx:14, dy:-12},
+  ORCH -- update --> MEM
+  MEM -- recall --> ORCH
+  ORCH -- handoff packet --> HITL
+  HITL -- corrections --> ING
+  HITL -- decisions --> AUD
 
-    {from:"orch",  to:"llm",   label:"tools+prompt", route:"vh", vy:300, dx:-12, dy:-12},
-    {from:"llm",   to:"og",    label:"filter",   animated:true, route:"vh", vy:385, dx:-10, dy:-12},
-    {from:"og",    to:"api",   label:"respond",  animated:true, route:"vh", vy:170, dx:16, dy:-16},
+  ING -- land --> DL
+  ING -- docs --> KB
+  ING -- chunk+embed --> EMB
+  EMB -- index --> VDB
+  INDEXER -- manage TTL/shards --> VDB
+  ING -- register --> CATALOG
+  CATALOG -- ACLs --> RBAC
 
-    {from:"orch",  to:"mem",   label:"update",   route:"vh", vy:520, dx:-10, dy:-12},
-    {from:"mem",   to:"orch",  label:"recall",   route:"vh", vy:520, dx:16,  dy:14},
-    {from:"orch",  to:"hitl",  label:"handoff packet", route:"vh", vy:240, dx:8, dy:-12},
-    {from:"hitl",  to:"ingest",label:"corrections", route:"hv", vx:980, dx:-10, dy:-12},
-    {from:"hitl",  to:"audit", label:"decisions",   route:"vh", vy:560, dx:-10, dy:-12},
+  ORCH -- log --> AUD
+  LLM -- store --> AUD
+  RETR -- store --> AUD
+  AUD -- samples --> EVAL
+  EVAL -- tune --> POLICY
+  EVAL -- prompt tests --> ORCH
+  AUD -- feedback --> DL
+  VDB -- ingest --> DL
+</div>
+</div>
 
-    {from:"ingest", to:"dl",     label:"land",       route:"vh", vy:260, dx:-10, dy:-12},
-    {from:"ingest", to:"kb",     label:"docs",       route:"vh", vy:150, dx:-10, dy:-12},
-    {from:"ingest", to:"embed",  label:"chunk+embed",route:"vh", vy:360, dx:-6,  dy:-12},
-    {from:"embed",  to:"vdb",    label:"index",      route:"vh", vy:150, dx:-10, dy:-12},
-    {from:"indexer",to:"vdb",    label:"manage TTL/shards", route:"vh", vy:190, dx:-6, dy:-12},
-    {from:"ingest", to:"catalog",label:"register",   route:"vh", vy:550, dx:-10, dy:-12},
-    {from:"catalog",to:"rbac",   label:"ACLs",       route:"vh", vy:460, dx:-10, dy:-12},
-
-    {from:"orch",  to:"audit", label:"log",      route:"vh", vy:560, dx:-10, dy:-12},
-    {from:"llm",   to:"audit", label:"store",    route:"vh", vy:560, dx:12,  dy:14},
-    {from:"retr",  to:"audit", label:"store",    route:"vh", vy:560, dx:-12, dy:-14},
-    {from:"audit", to:"eval",  label:"samples",  route:"vh", vy:640, dx:-10, dy:-12},
-    {from:"eval",  to:"policy",label:"tune",     route:"vh", vy:180, dx:-10, dy:-12},
-    {from:"eval",  to:"orch",  label:"prompt tests", route:"vh", vy:120, dx:-10, dy:-12},
-    {from:"audit", to:"dl",    label:"feedback", route:"hv", vx:980, dx:-12, dy:-12},
-    {from:"vdb",   to:"dl",    label:"ingest",   route:"vh", vy:260, dx:-10, dy:14},
-  ]
-};
-/* ===== END DATA ===== */
-</script>
-
-<script>
-(function(){
-  const SVG="http://www.w3.org/2000/svg", W=1600, H=900;
-  document.getElementById("t").textContent=diagram.title||"";
-  document.getElementById("st").textContent=diagram.subtitle||"";
-  document.getElementById("ft").textContent=diagram.footer||"";
-
-  const s=document.getElementById("stage");
-  const svg=E("svg",{viewBox:`0 0 ${W} ${H}`}); s.appendChild(svg);
-
-  // grid
-  const grid=E("g",{id:"grid",class:diagram.showGrid?"":"hidden"});
-  for(let x=0;x<=W;x+=40) grid.appendChild(E("line",{x1:x,y1:0,x2:x,y2:H,class:"grid"}));
-  for(let y=0;y<=H;y+=40) grid.appendChild(E("line",{x1:0,y1:y,x2:W,y2:y,class:"grid"}));
-  svg.appendChild(grid);
-
-  // defs
-  const defs=E("defs",{}); defs.appendChild(marker("arrow","#334155")); svg.appendChild(defs);
-
-  // layers
-  const gPanels=E("g"); svg.appendChild(gPanels);
-  const gEdges=E("g"); svg.appendChild(gEdges);
-  const gNodes=E("g"); svg.appendChild(gNodes);
-  const gLabels=E("g"); svg.appendChild(gLabels); // labels on top
-
-  // panels
-  diagram.groups.forEach(g=>{
-    gPanels.appendChild(E("rect",{x:g.x,y:g.y,width:g.w,height:g.h,class:"panel"}));
-    const w=Math.max(90,g.label.length*7.5);
-    gPanels.appendChild(E("rect",{x:g.x+14,y:g.y+12,width:w,height:22,class:"badge"}));
-    const t=E("text",{x:g.x+24,y:g.y+27,class:"badge-text"}); t.textContent=g.label; gPanels.appendChild(t);
-  });
-
-  // nodes
-  diagram.nodes.forEach(n=>{
-    const g=E("g",{"data-id":n.id});
-    g.appendChild(E("rect",{x:n.x,y:n.y,width:n.w,height:n.h,class:"node"}));
-    const tt=E("text",{x:n.x+14,y:n.y+26,class:"node-title"}); tt.textContent=n.label; g.appendChild(tt);
-    if(n.sub){const st=E("text",{x:n.x+14,y:n.y+n.h-14,class:"node-sub"}); st.textContent=n.sub; g.appendChild(st);}
-    gNodes.appendChild(g);
-  });
-
-  // edges + labels
-  diagram.edges.forEach(e=>{
-    const d=route(e); // uses edge-aware anchors
-    const p=E("path",{d,class:"edge"+(e.animated?" animated":""),"marker-end":"url(#arrow)"}); gEdges.appendChild(p);
-    if(e.label){
-      const mid=pointAt(p,0.5);
-      const tx=e.dx||0, ty=(e.dy!=null?e.dy:-6);
-      const lab=E("text",{x:mid.x+tx,y:mid.y+ty,class:"edge-label","text-anchor":"middle"}); lab.textContent=e.label; gLabels.appendChild(lab);
-    }
-  });
-
-  // pan/zoom + exports
-  const pz=svgPanZoom(svg,{controlIconsEnabled:true,fit:true,center:true,minZoom:.5,maxZoom:6});
-  document.getElementById("reset").onclick=()=>{pz.resetZoom();pz.center();pz.fit();};
-  document.getElementById("export-svg").onclick=()=>downloadSVG(svg);
-  document.getElementById("export-png").onclick=()=>downloadPNG(svg);
-
-  /* helpers */
-  function E(tag,attrs){const x=document.createElementNS(SVG,tag);for(const k in attrs)x.setAttribute(k,attrs[k]);return x;}
-  function marker(id,color){const m=E("marker",{id,viewBox:"0 0 14 10",refX:"12.5",refY:"5",markerWidth:"12",markerHeight:"12",orient:"auto-start-reverse"}); m.appendChild(E("path",{d:"M 0 0 L 14 5 L 0 10 Z",fill:color})); return m;}
-  function nodeOf(id){return diagram.nodes.find(n=>n.id===id);}
-  function centerOf(n){return {x:n.x+n.w/2,y:n.y+n.h/2};}
-
-  // Edge-aware routing: connect from box edges with a small margin
-  function route(e){
-    const a=nodeOf(e.from), b=nodeOf(e.to);
-    const route=e.route||"hv", margin=8;
-
-    if(route==="vh"){
-      // vertical first
-      const fromBottom = centerOf(b).y >= centerOf(a).y;
-      const start={ x: a.x + a.w/2, y: fromBottom ? a.y + a.h + margin : a.y - margin };
-      const end  ={ x: b.x + b.w/2, y: fromBottom ? b.y - margin : b.y + b.h + margin };
-      const vy = e.vy ?? (start.y + end.y)/2;
-      return `M ${start.x} ${start.y}
-              L ${start.x} ${vy-10}
-              C ${start.x} ${vy-4} ${start.x} ${vy-4} ${start.x+4} ${vy}
-              L ${end.x-4} ${vy}
-              C ${end.x-4} ${vy} ${end.x} ${vy} ${end.x} ${vy+4}
-              L ${end.x} ${end.y}`;
-    } else {
-      // horizontal first
-      const toRight = centerOf(b).x >= centerOf(a).x;
-      const start={ x: toRight ? a.x + a.w + margin : a.x - margin, y: a.y + a.h/2 };
-      const end  ={ x: toRight ? b.x - margin : b.x + b.w + margin, y: b.y + b.h/2 };
-      const vx = e.vx ?? (start.x + end.x)/2;
-      return `M ${start.x} ${start.y}
-              L ${vx-10} ${start.y}
-              C ${vx-4} ${start.y} ${vx-4} ${start.y} ${vx} ${start.y+4}
-              L ${vx} ${end.y-4}
-              C ${vx} ${end.y-4} ${vx} ${end.y} ${vx+4} ${end.y}
-              L ${end.x} ${end.y}`;
-    }
-  }
-
-  function pathLen(p){return p.getTotalLength();}
-  function pointAt(p,t){return p.getPointAtLength(pathLen(p)*t);}
-
-  function downloadSVG(sv){const c=sv.cloneNode(true);const str=new XMLSerializer().serializeToString(c);const blob=new Blob([str],{type:"image/svg+xml"});const url=URL.createObjectURL(blob);trigger(url,(diagram.title||"diagram")+".svg");}
-  function downloadPNG(sv){const c=sv.cloneNode(true);const str=new XMLSerializer().serializeToString(c);const img=new Image();img.onload=function(){const scale=2,canvas=document.createElement("canvas");canvas.width=1600*scale;canvas.height=900*scale;const ctx=canvas.getContext("2d");ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim()||"#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.toBlob(b=>trigger(URL.createObjectURL(b),(diagram.title||"diagram")+".png"));}; img.src="data:image/svg+xml;base64,"+btoa(unescape(encodeURIComponent(str))); }
-  function trigger(url,name){const a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-})();
-</script>
 </body>
 </html>
