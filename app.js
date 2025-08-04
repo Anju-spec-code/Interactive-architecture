@@ -69,7 +69,7 @@
   // Draw edges AFTER nodes are measured (we have positions); orthogonal elbow
   diagram.edges.forEach(e => {
     const s = centerOf(e.from), t = centerOf(e.to);
-    const pathD = orthPath(s, t);
+    const pathD = orthPath(s, t, e);
     const path = el("path", {
       d: pathD,
       class: "edge" + (e.animated ? " animated" : ""),
@@ -120,16 +120,30 @@
     return { x: n.x + n.w/2, y: n.y + n.h/2, w:n.w, h:n.h };
   }
   // Simple orthogonal path: horizontal → vertical with a mild radius
-  function orthPath(s, t) {
-    const mx = (s.x + t.x) / 2;
-    // Build an L-shaped polyline with rounded joints via cubic beziers
+  function orthPath(s, t, e = {}) {
+  // e.route: 'hv' (default) or 'vh'
+  // e.vx / e.vy: optional elbow coordinates
+  const route = e.route || 'hv';
+
+  if (route === 'vh') {
+    const vy = e.vy ?? (s.y + t.y) / 2;
     return `M ${s.x} ${s.y}
-            L ${mx-10} ${s.y}
-            C ${mx-4} ${s.y} ${mx-4} ${s.y} ${mx} ${s.y+4}
-            L ${mx} ${t.y-4}
-            C ${mx} ${t.y-4} ${mx} ${t.y} ${mx+4} ${t.y}
+            L ${s.x} ${vy-10}
+            C ${s.x} ${vy-4} ${s.x} ${vy-4} ${s.x+4} ${vy}
+            L ${t.x-4} ${vy}
+            C ${t.x-4} ${vy} ${t.x} ${vy} ${t.x} ${vy+4}
+            L ${t.x} ${t.y}`;
+  } else {
+    const vx = e.vx ?? (s.x + t.x) / 2;
+    return `M ${s.x} ${s.y}
+            L ${vx-10} ${s.y}
+            C ${vx-4} ${s.y} ${vx-4} ${s.y} ${vx} ${s.y+4}
+            L ${vx} ${t.y-4}
+            C ${vx} ${t.y-4} ${vx} ${t.y} ${vx+4} ${t.y}
             L ${t.x} ${t.y}`;
   }
+}
+
   function pathLength(path) { return path.getTotalLength(); }
   function pointAt(path, t) { return path.getPointAtLength(pathLength(path)*t); }
   function midpointOnPath(path, t) { const p = pointAt(path, t); return { x:p.x, y:p.y }; }
